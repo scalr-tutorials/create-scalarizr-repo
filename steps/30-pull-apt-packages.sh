@@ -5,21 +5,16 @@ set -o pipefail
 
 source "${SCALR_REPOCONFIG_CONF}"
 
-remote_base="${REMOTE_REPO_ROOT}/apt-plain"
-
 for repo in ${CLONE_REPOS}; do
-  remote_repo="${remote_base}/${repo}/"
-  extra_wget_opts=("--accept" "*.deb")
-
   echo "Cloning repo '$repo'"
 
   # Navigate to the appropriate repository
   cd "${LOCAL_REPO_ROOT}/${repo}/apt"
 
-  # Pull latest packages from Scalr
-  wget "${WGET_OPTS[@]}" "${extra_wget_opts[@]}" "${remote_repo}"
+  # Pull latest packages from
+  wget_mirror --accept='*.deb' "${REMOTE_REPO_ROOT}/apt-plain/${repo}/"
 
-  # Create a release file
+ # Create a release file
   cat > Release << EOC
 Origin: ${ORG_NAME}
 Label: scalr

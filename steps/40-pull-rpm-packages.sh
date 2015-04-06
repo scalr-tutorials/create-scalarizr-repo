@@ -5,18 +5,18 @@ set -o pipefail
 
 source "${SCALR_REPOCONFIG_CONF}"
 
-remote_base="${REMOTE_REPO_ROOT}/rpm"
-
 for repo in ${CLONE_REPOS}; do
-  remote_repo_base="${remote_base}/${repo}/rhel"
-  extra_wget_opts=("--accept" "*.rpm")
+  echo "Cloning repo '$repo'"
 
-  for ver in ${RHEL_VERSIONS}; do
-    for arch in x86_64 i386; do
-      cd "${LOCAL_REPO_ROOT}/${repo}/rpm/rhel/${ver}/${arch}"
-      echo "## mirroring $ver/$arch"
-      wget "${WGET_OPTS[@]}" "${extra_wget_opts[@]}" "${remote_repo_base}/${ver}/${arch}/"
-      createrepo .
-    done
+  current_repo_root="${LOCAL_REPO_ROOT}/${repo}/rpm/rhel"
+  # Mirror a single copy of EL5 packages and create aliases
+  for arch in x86_64 i386; do
+    cd "${current_repo_root}/latest/${arch}"
+    wget_mirror "${REMOTE_REPO_ROOT}/rpm/${repo}/rhel/latest/${arch}/"
+  done
+  
+  cd ${current_repo_root}
+  for alias in ${RHEL_5_ALIASES} ${RHEL_6_ALIASES} ${RHEL_7_ALIASES}; do
+    ln -s latest ${alias}
   done
 done

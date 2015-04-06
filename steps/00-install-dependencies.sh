@@ -8,7 +8,8 @@ set -o pipefail
 
 if which apt-get; then
   echo "Found apt-get"
-  apt-get install -q -y nginx createrepo dpkg-dev wget
+  apt-get update
+  apt-get install -q -y nginx dpkg-dev wget
 elif which yum; then
   echo "Found yum"
 
@@ -21,7 +22,7 @@ elif which yum; then
     echo "The nux-dextop repo must be enabled (dpkg-dev). Please enable it. View: http://li.nux.ro/repos.html"
   }
 
-  for pkg in "nginx" "createrepo" "wget"; do
+  for pkg in "nginx" "wget"; do
     yum install -y "${pkg}"
   done
 
